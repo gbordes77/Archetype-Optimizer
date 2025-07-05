@@ -1,27 +1,23 @@
-// src/framework/Pipeline.js
 const path = require('path');
 
 class Pipeline {
-  constructor(config) {
+  constructor(config, initialContext = {}) {
     this.name = config.name;
     this.steps = config.steps;
-    this.context = config.context || {};
+    this.context = initialContext; // Le contexte vient du lanceur
   }
 
   async run() {
     console.log(`|--- Démarrage du pipeline : ${this.name} ---|`);
-    let stepNumber = 1;
-    for (const stepConfig of this.steps) {
+    for (let i = 0; i < this.steps.length; i++) {
+      const stepConfig = this.steps[i];
       try {
-        const stepPath = path.resolve(__dirname, '..', '..', stepConfig.path);
-        const StepClass = require(stepPath);
+        const StepClass = require(path.resolve(__dirname, '..', '..', stepConfig.path));
         const stepInstance = new StepClass(stepConfig.name);
         
-        console.log(`\n[Étape ${stepNumber}/${this.steps.length}] : Exécution de "${stepConfig.name}"...`);
+        console.log(`\n[Étape ${i + 1}/${this.steps.length}] : Exécution de "${stepConfig.name}"...`);
         this.context = await stepInstance.execute(this.context);
-        console.log(`[Étape ${stepNumber}/${this.steps.length}] : "${stepConfig.name}" terminée.`);
-        stepNumber++;
-
+        console.log(`[Étape ${i + 1}/${this.steps.length}] : "${stepConfig.name}" terminée.`);
       } catch (error) {
         console.error(`Erreur à l'étape "${stepConfig.name}":`, error.message);
         throw error;
