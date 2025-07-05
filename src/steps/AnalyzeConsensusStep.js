@@ -3,37 +3,52 @@ const Step = require('../framework/Step');
 class AnalyzeConsensusStep extends Step {
   async execute(context) {
     const { parsedDecks, archetypeName } = context;
-    const mainDeckCounts = new Map();
-    const sideBoardCounts = new Map();
+    const cardMap = new Map(); // Une seule map pour stocker les données complètes
+
+    const processCard = (card, deckPart) => {
+      const officialName = card.scryfallData?.name || card.name;
+      if (!cardMap.has(officialName)) {
+        cardMap.set(officialName, {
+          name: officialName,
+          scryfallData: card.scryfallData,
+          main: { totalCopies: 0, inLists: 0 },
+          side: { totalCopies: 0, inLists: 0 },
+        });
+      }
+      const entry = cardMap.get(officialName);
+      entry[deckPart].totalCopies += card.quantity;
+      entry[deckPart].inLists += 1;
+    };
+    
     parsedDecks.forEach(deck => {
-      deck.main.forEach(card => {
-        if (!mainDeckCounts.has(card.name)) mainDeckCounts.set(card.name, { totalCopies: 0, inLists: 0 });
-        const current = mainDeckCounts.get(card.name);
-        current.totalCopies += card.quantity;
-        current.inLists += 1;
-      });
-      deck.side.forEach(card => {
-        if (!sideBoardCounts.has(card.name)) sideBoardCounts.set(card.name, { totalCopies: 0, inLists: 0 });
-        const current = sideBoardCounts.get(card.name);
-        current.totalCopies += card.quantity;
-        current.inLists += 1;
-      });
+      deck.main.forEach(card => processCard(card, 'main'));
+      deck.side.forEach(card => processCard(card, 'side'));
     });
+
     const deckCount = parsedDecks.length;
-    const formatResults = (countsMap) => {
-      return Array.from(countsMap.entries())
-        .map(([name, data]) => {
-          const adoptionRate = data.inLists / deckCount;
+    const formatResults = (deckPart) => {
+      return Array.from(cardMap.values())
+        .filter(data => data[deckPart].inLists > 0) // On ne garde que les cartes présentes dans cette partie
+        .map(data => {
+          const partData = data[deckPart];
+          const adoptionRate = partData.inLists / deckCount;
           let status = '🟡 FLEX';
           if (adoptionRate >= 0.9) status = '✅ CORE';
           if (adoptionRate <= 0.4) status = '❌ SPICY';
-          return { name, ...data, adoptionRate, status };
+          return { 
+            name: data.name,
+            scryfallData: data.scryfallData,
+            ...partData,
+            adoptionRate,
+            status
+          };
         })
         .sort((a, b) => b.inLists - a.inLists || b.totalCopies - a.totalCopies);
     };
+    
     context.analysisResults = {
-      mainDeck: formatResults(mainDeckCounts),
-      sideboard: formatResults(sideBoardCounts),
+      mainDeck: formatResults('main'),
+      sideboard: formatResults('side'),
       deckCount,
       archetype: archetypeName,
     };

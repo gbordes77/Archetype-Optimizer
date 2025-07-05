@@ -1,11 +1,10 @@
 # Archetype Optimizer
 
-**Archetype Optimizer** est un outil en ligne de commande puissant conçu pour les joueurs de Magic: The Gathering. Il analyse des centaines de listes de decks pour un archétype donné, extrait un "consensus" statistique et génère un rapport HTML interactif et visuel pour vous aider à comprendre le méta-jeu actuel et à optimiser votre liste.
+**Archetype Optimizer** est un outil en ligne de commande puissant conçu pour les joueurs de Magic: The Gathering. Il se connecte à l'API de Scryfall pour trouver des decks d'un archétype donné, analyse statistiquement les résultats, et génère un rapport HTML interactif pour vous aider à comprendre le méta-jeu et à optimiser votre liste.
 
 ## Fonctionnalités
 
-- **Scraping Automatisé** : Récupère les dernières listes de tournois pour n'importe quel archétype depuis `mtggoldfish.com`.
-- **Filtrage Puissant** : Affinez votre recherche par date de tournoi ou par mots-clés de performance (ex: `challenge`, `top8`, `qualifier`).
+- **Recherche par API** : Utilise la base de données de Scryfall, une source fiable, pour trouver des listes de decks.
 - **Enrichissement des Données** : Valide chaque nom de carte via l'API Scryfall pour garantir la précision et récupérer les images officielles.
 - **Analyse de Consensus** : Calcule les pourcentages d'adoption, le nombre moyen de copies, et classifie les cartes en `CORE`, `FLEX`, ou `SPICY`.
 - **Rapport HTML Visuel** : Génère un fichier `rapport_metagame.html` unique, propre et facile à partager, avec les images des cartes et des liens vers Scryfall.
@@ -30,49 +29,26 @@ Assurez-vous d'avoir [Node.js](https://nodejs.org/) (version 16 ou supérieure) 
 
 ### 3. Lancer une Analyse
 
-L'outil se pilote entièrement depuis le terminal. La commande de base est `npm start --` suivie de vos options.
+L'outil se pilote entièrement depuis le terminal.
 
-**Étape 1 : Trouver l'URL de votre archétype**
-
-1.  Rendez-vous sur [mtggoldfish.com](https://www.mtggoldfish.com/metagame/standard#paper).
-2.  Sélectionnez le format qui vous intéresse (Standard, Modern, Legacy, etc.).
-3.  Dans la liste des archétypes, cliquez sur celui que vous voulez analyser.
-4.  Copiez l'URL de la page qui s'affiche. Ce sera votre `--url`.
-
-**Étape 2 : Exécuter la commande**
-
-Utilisez la commande suivante en remplaçant les valeurs d'exemple :
+Utilisez la commande suivante en remplaçant la valeur d'exemple :
 
 ```bash
-npm start -- --url "URL_DE_L_ARCHETYPE" --name "NOM_DE_L_ARCHETYPE" [options]
+node index.js --name "NOM_DE_L_ARCHETYPE"
 ```
 
-**Exemples concrets :**
+**Exemple concret :**
 
-- **Analyse simple de "Dimir Midrange" en Standard :**
+- **Analyse de "Dimir Midrange" :**
   ```bash
-  npm start -- --url "https://www.mtggoldfish.com/archetype/standard-dimir-midrange-a5f1e5f8-fa27-4d80-82d1-217234691461" --name "Dimir Midrange"
-  ```
-
-- **Analyse de "Boros Convoke" en Pioneer, uniquement les Top 8 de "Challenge" depuis le 15 juin 2025 :**
-  ```bash
-  npm start -- --url "https://..." --name "Pioneer Boros Convoke" --date "2025-06-15" --keywords challenge top8
-  ```
-
-- **Forcer une nouvelle analyse sans utiliser le cache :**
-  ```bash
-  npm start -- --url "https://..." --name "Dimir Midrange" --no-cache
+  node index.js --name "Dimir Midrange"
   ```
 
 ### 4. Options Disponibles
 
 | Option      | Alias | Description                                        | Obligatoire |
 |-------------|-------|----------------------------------------------------|-------------|
-| `--url`     | `-u`  | URL de la page de l'archétype sur MTGGoldfish.       | **Oui**     |
-| `--name`    | `-n`  | Nom de l'archétype qui apparaîtra dans le rapport. | **Oui**     |
-| `--date`    | `-d`  | Date de début (YYYY-MM-DD) pour filtrer les listes.  | Non         |
-| `--keywords`| `-k`  | Mots-clés pour filtrer par nom de tournoi.         | Non         |
-| `--no-cache`|       | Désactive le cache et force un nouveau scraping.   | Non         |
+| `--name`    | `-n`  | Nom de l'archétype à rechercher.                   | **Oui**     |
 | `--help`    | `-h`  | Affiche le menu d'aide.                            | Non         |
 
 ---

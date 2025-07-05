@@ -12,7 +12,8 @@ class Pipeline {
     for (let i = 0; i < this.steps.length; i++) {
       const stepConfig = this.steps[i];
       try {
-        const StepClass = require(path.resolve(__dirname, '..', '..', stepConfig.path));
+        const stepPath = path.resolve(process.cwd(), stepConfig.path.replace('../', ''));
+        const StepClass = require(stepPath);
         const stepInstance = new StepClass(stepConfig.name);
         
         console.log(`\n[Étape ${i + 1}/${this.steps.length}] : Exécution de "${stepConfig.name}"...`);

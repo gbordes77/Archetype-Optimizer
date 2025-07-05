@@ -1,8 +1,9 @@
 {
-  "name": "Analyse du Metagame Standard depuis MTGGoldfish",
+  "name": "Analyse du Metagame via Scryfall",
   "steps": [
-    { "name": "Scraping des listes de decks", "path": "../src/steps/ScrapeMtggoldfishStep.js" },
+    { "name": "Recherche des decks via l'API Scryfall", "path": "../src/steps/FindDecksScryfallStep.js" },
     { "name": "Parsing des textes bruts", "path": "../src/steps/ParseDecklistsStep.js" },
+    { "name": "Enrichissement des données avec Scryfall", "path": "../src/steps/EnrichCardDataStep.js" },
     { "name": "Analyse du consensus", "path": "../src/steps/AnalyzeConsensusStep.js" },
     { "name": "Génération du rapport HTML", "path": "../src/steps/RenderHtmlReportStep.js" }
   ]
