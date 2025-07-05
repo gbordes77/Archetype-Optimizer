@@ -1,0 +1,29 @@
+{
+  "name": "Analyse du Metagame Standard depuis MTGGoldfish",
+  "context": {
+    "archetypeUrl": "https://www.mtggoldfish.com/archetype/standard-dimir-midrange-a5f1e5f8-fa27-4d80-82d1-217234691461",
+    "archetypeName": "Dimir Midrange",
+    "filters": {
+      "sinceDate": null,
+      "performanceKeywords": ["challenge", "qualifier", "top 8", "championship"]
+    }
+  },
+  "steps": [
+    {
+      "name": "Scraping des listes de decks",
+      "path": "../src/steps/ScrapeMtggoldfishStep.js"
+    },
+    {
+      "name": "Parsing des textes bruts",
+      "path": "../src/steps/ParseDecklistsStep.js"
+    },
+    {
+      "name": "Analyse du consensus",
+      "path": "../src/steps/AnalyzeConsensusStep.js"
+    },
+    {
+      "name": "Génération du rapport HTML",
+      "path": "../src/steps/RenderHtmlReportStep.js"
+    }
+  ]
+} 
