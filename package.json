@@ -1,16 +1,16 @@
 {
   "name": "archetype-optimizer",
-  "version": "3.0.0",
-  "description": "Scrapes and analyzes MTG decklists using a pipeline framework and Scryfall data.",
+  "version": "2.1.0",
+  "description": "Scrapes and analyzes MTG decklists to find a consensus build.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js --",
     "help": "node index.js --help"
   },
   "author": "gbordes77 & Gemini",
   "license": "ISC",
   "dependencies": {
-    "node-fetch": "^2.6.7",
+    "axios": "^1.7.2",
     "puppeteer": "^22.10.0",
     "yargs": "^17.7.2"
   }

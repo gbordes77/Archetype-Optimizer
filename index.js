@@ -1,26 +1,60 @@
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
-const Pipeline = require('./src/framework/Pipeline');
-const pipelineConfig = require('./config/metagame_pipeline.json');
+const pipeline = require('./src/pipeline');
+
+// Définition des options de la ligne de commande
+const argv = yargs(hideBin(process.argv))
+  .usage('Usage: npm start -- --url <url> --name <name> [options]')
+  .option('url', {
+    alias: 'u',
+    type: 'string',
+    description: 'URL de la page archétype de MTGGoldfish',
+    demandOption: true,
+  })
+  .option('name', {
+    alias: 'n',
+    type: 'string',
+    description: "Nom de l'archétype pour le rapport",
+    demandOption: true,
+  })
+  .option('date', {
+    alias: 'd',
+    type: 'string',
+    description: 'Date de départ (AAAA-MM-JJ) pour le filtre',
+    default: null,
+  })
+  .option('keywords', {
+    alias: 'k',
+    type: 'array',
+    description: 'Mots-clés de performance (ex: --keywords challenge qualifier)',
+    default: [],
+  })
+  .option('no-cache', {
+    type: 'boolean',
+    description: 'Force le re-scraping de toutes les pages, sans utiliser le cache.',
+    default: false,
+  })
+  .help()
+  .alias('help', 'h').argv;
+
+// On construit l'objet config à partir des arguments de la ligne de commande
+const config = {
+  archetypeUrl: argv.url,
+  archetypeName: argv.name,
+  filters: {
+    sinceDate: argv.date,
+    performanceKeywords: argv.keywords,
+  },
+  useCache: !argv.noCache,
+};
 
 async function main() {
-  const argv = yargs(hideBin(process.argv))
-    .usage('Usage: node index.js --name <archetype-name>')
-    .option('name', { alias: 'n', type: 'string', description: "Nom de l'archétype à analyser", demandOption: true })
-    .help().alias('help', 'h').argv;
-
-  const initialContext = {
-    archetypeName: argv.name,
-  };
-
-  console.log(`🚀 Lancement du pipeline : ${pipelineConfig.name}`);
-  const pipeline = new Pipeline(pipelineConfig, initialContext);
-
+  console.log(`🚀 Lancement de l'optimisation pour l'archétype : ${config.archetypeName}`);
   try {
-    await pipeline.run();
-    console.log(`✅ Pipeline terminé avec succès !`);
+    await pipeline.run(config);
+    console.log('✅ Processus terminé avec succès ! Le fichier "rapport_metagame.html" a été créé.');
   } catch (error) {
-    console.error(`❌ Erreur critique durant l'exécution du pipeline.`, error);
+    console.error('❌ Une erreur critique est survenue durant l\'exécution du pipeline :', error);
   }
 }
 
